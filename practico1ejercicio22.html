@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vue Example</title>
+    <script src="https://unpkg.com/vue@next"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>All Paths from A to G</h1>
+      <img src="./sanjuan.jpg" alt="san juan" />
+      <br />
+      <h2>Total de combinaciones: {{ count }}</h2>
+      <br />
+      <div>
+        <h2>Paths from {{ startNode }} to {{ endNode }}</h2>
+        <p v-if="paths.length === 0">No paths found</p>
+        <ol v-else>
+          <li v-for="path in paths" :key="path.join('-')">
+            {{ path.join(' -> ') }}
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            startNode: "A",
+            endNode: "G",
+            nodes: [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H",
+              "I",
+              "J",
+              "K",
+              "L",
+              "M",
+              "N",
+              "O",
+              "P",
+              "Q",
+              "R",
+            ],
+            edges: [
+              ["A", "B"],
+              ["B", "A"],
+              ["B", "C"],
+              ["B", "D"],
+              ["C", "B"],
+              ["C", "E"],
+              ["D", "B"],
+              ["D", "G"],
+              ["E", "C"],
+              ["E", "F"],
+              ["F", "E"],
+              ["F", "H"],
+              ["F", "I"],
+              ["G", "D"],
+              ["G", "Q"],
+              ["G", "O"],
+              ["H", "F"],
+              ["H", "I"],
+              ["H", "J"],
+              ["H", "K"],
+              ["I", "F"],
+              ["I", "H"],
+              ["I", "Q"],
+              ["J", "H"],
+              ["J", "Q"],
+              ["J", "M"],
+              ["K", "H"],
+              ["K", "M"],
+              ["L", "M"],
+              ["L", "N"],
+              ["M", "J"],
+              ["M", "L"],
+              ["M", "N"],
+              ["M", "K"],
+              ["N", "M"],
+              ["N", "R"],
+              ["N", "O"],
+              ["O", "R"],
+              ["O", "N"],
+              ["O", "P"],
+              ["O", "G"],
+              ["P", "O"],
+              ["Q", "I"],
+              ["Q", "J"],
+              ["Q", "R"],
+              ["Q", "G"],
+              ["R", "Q"],
+              ["R", "N"],
+              ["R", "O"],
+            ],
+            paths: [],
+            count: 0,
+          };
+        },
+        methods: {
+          findPaths(start, end, path = []) {
+            path.push(start);
+            if (start === end) {
+              const newPath = [...path];
+              if (!this.paths.some((p) => isEqual(p, newPath))) {
+                this.paths.push(newPath);
+                this.count++;
+              }
+              return;
+            }
+            const neighbors = this.edges.filter(
+              ([a, b]) => a === start || b === start
+            );
+            for (let [a, b] of neighbors) {
+              const next = a === start ? b : a;
+              if (!path.includes(next)) {
+                this.findPaths(next, end, path);
+                path.pop();
+              }
+            }
+
+            function isEqual(path1, path2) {
+              if (path1.length !== path2.length) return false;
+              for (let i = 0; i < path1.length; i++) {
+                if (path1[i] !== path2[i]) return false;
+              }
+              return true;
+            }
+          },
+        },
+        mounted() {
+          this.findPaths(this.startNode, this.endNode);
+        },
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>
